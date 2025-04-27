@@ -1,4 +1,18 @@
-import numpy as np
+"""
+Pseudo-Random Number Generator (PRNG) module implementing Linear Congruential Generator (LCG) and Xorshift algorithms.
+
+This module provides generators for creating pseudo-random number sequences with configurable bit sizes.
+Supports generation, saving, and parallel processing of random number sequences.
+
+Key functions:
+- lcg_numpy: Linear Congruential Generator with configurable parameters
+- xorshift_numpy: Xorshift random number generator with adaptive shift parameters
+- generate_and_save: Generates and saves random numbers with performance tracking
+- run_generate_and_save: Wrapper for parallel generation of random numbers across different bit sizes
+
+References:
+    Marsaglia, G. (2003). Xorshift RNGs. Journal of Statistical Software, 8(14), 1-6.
+"""
 from collections.abc import Generator
 import time
 import multiprocessing
@@ -31,22 +45,22 @@ def choose_xorshift_parameters(bits: int) -> tuple[int, int, int]:
         Marsaglia, G. (2003). Xorshift RNGs. Journal of Statistical Software, 8(14), 1-6.
         https://www.jstatsoft.org/article/view/v008i14 :cite[1]:cite[3]
     """
-    # Parâmetros canônicos do artigo original :cite[3]
+    # Canonical parameters from the original paper :cite[3]
     if bits <= 32:
-        return 13, 17, 5  # Versão 32-bit (xor32) :cite[3]
+        return 13, 17, 5  # 32-bit version (xor32) :cite[3]
     elif bits <= 64:
-        return 13, 7, 17   # Versão 64-bit (xor64) :cite[3]
+        return 13, 7, 17   # 64-bit version (xor64) :cite[3]
     elif bits <= 96:
-        return 10, 5, 26   # Adaptado para 96-bit baseado nos padrões observados
+        return 10, 5, 26   # Adapted for 96-bit based on observed patterns
     elif bits <= 128:
-        return 5, 14, 1    # Versão 128-bit (xor128) :cite[3]
+        return 5, 14, 1    # 128-bit version (xor128) :cite[3]
     else:
-        # Heurística para tamanhos maiores (>128 bits):
-        # Divisores primos proporcionais ao tamanho do estado,
-        # mantendo a proporção dos parâmetros originais :cite[3]
-        shift1 = bits // 3  # ~1/3 do tamanho (equivalente a 13/32 para 32-bit)
-        shift2 = bits // 2  # ~1/2 do tamanho (equivalente a 17/32)
-        shift3 = bits // 5  # ~1/5 do tamanho (equivalente a 5/32)
+        # Heuristic for larger sizes (>128 bits):
+        # Prime divisors proportional to the state size,
+        # maintaining the proportion of the original parameters :cite[3]
+        shift1 = bits // 3  # ~1/3 of the size (equivalent to 13/32 for 32-bit)
+        shift2 = bits // 2  # ~1/2 of the size (equivalent to 17/32)
+        shift3 = bits // 5  # ~1/5 of the size (equivalent to 5/32)
         return shift1, shift2, shift3
 
 def xorshift_numpy(seed: int, bits: int = 4096) -> Generator[int, None, None]:

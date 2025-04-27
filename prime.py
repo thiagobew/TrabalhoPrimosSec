@@ -1,8 +1,7 @@
-import numpy as np
 import random
 import time
 from pathlib import Path
-from prng import lcg_numpy, xorshift_numpy
+from prng import lcg_numpy
 
 # --- Primality Tests ---
 # True if n is "probably prime", False if "composite"
